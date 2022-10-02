@@ -35,7 +35,7 @@ public class Board : MonoBehaviour
     private void Start()
     {
         SpawnPiece();
-        // music.stopMusic();
+        music.stopMusic();
 
 
     }

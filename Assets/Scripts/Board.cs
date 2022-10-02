@@ -10,6 +10,9 @@ public class Board : MonoBehaviour
     public Vector2Int boardSize = new Vector2Int(10, 20);
     public Vector3Int spawnPosition = new Vector3Int(-1, 8, 0);
 
+    public Music music;
+    public MainMenu mainMenu;
+
     public RectInt Bounds {
         get
         {
@@ -22,6 +25,7 @@ public class Board : MonoBehaviour
     {
         tilemap = GetComponentInChildren<Tilemap>();
         activePiece = GetComponentInChildren<Piece>();
+        music = FindObjectOfType<Music>();
 
         for (int i = 0; i < tetrominoes.Length; i++) {
             tetrominoes[i].Initialize();
@@ -31,6 +35,9 @@ public class Board : MonoBehaviour
     private void Start()
     {
         SpawnPiece();
+        // music.stopMusic();
+
+
     }
 
     public void SpawnPiece()
@@ -50,6 +57,8 @@ public class Board : MonoBehaviour
     public void GameOver()
     {
         tilemap.ClearAllTiles();
+        music.playGameOverMusic();
+        // mainMenu.NewGame();
 
         // Do anything else you want on game over here..
     }
@@ -107,6 +116,10 @@ public class Board : MonoBehaviour
             // because the tiles above will fall down when a row is cleared
             if (IsLineFull(row)) {
                 LineClear(row);
+                music.pauseMusic();
+                music.playScorePointMusic();
+                music.unpauseMusic();
+
             } else {
                 row++;
             }

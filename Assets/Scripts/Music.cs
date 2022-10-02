@@ -20,14 +20,13 @@ public class Music : MonoBehaviour {
 
     // get the first music by random number
     void randomInitialization() {
-        nextMusic = Random.Range(0, BGM.Length);
-        source.clip = BGM[nextMusic] as AudioClip;
+        // nextMusic = Random.Range(0, BGM.Length);
+        source.clip = BGM[3] as AudioClip;
     }
 
     // select next music and increment nextMusic by circular reference
-    void selectNextMusic(){
-        source.clip = BGM[nextMusic] as AudioClip;
-        nextCircularPlaylist();
+    void selectScorePointMusic(){
+        source.clip = BGM[5] as AudioClip;
     }
 
     // Create a circular reference: 0 1 2 0 1 2 0 1 2 ...
@@ -36,28 +35,63 @@ public class Music : MonoBehaviour {
     }
 
     // Select the next music and play it
-    void playNextMusic() {
-        selectNextMusic();
+    public void playScorePointMusic() {
+        selectScorePointMusic();
         source.Play();
+    }
+
+    public void playOpenMusic()
+    {
+        randomInitialization();
+        source.Play();
+    }
+
+    public void pauseMusic()
+    {
+        source.Pause();
+    }
+
+    public void unpauseMusic()
+    {
+        source.UnPause();
+    }
+
+
+
+    void selectGameOverMusic()
+    {
+        source.clip = BGM[4] as AudioClip;
+    }
+
+    public void playGameOverMusic()
+    {
+        selectGameOverMusic();
+        source.Play();
+    }
+
+    public void stopMusic()
+    {
+        source.Stop();
     }
    
     // this avoid the behavior of start a new music
     // when the unity stop by desfocusing
     // So we wait for 1 second before change for new music
     // after isPLaying is false
-    IEnumerator tryChange() {
-        tryingChange = true;
-        yield return new WaitForSeconds(1);
-        if (!source.isPlaying) {
-            playNextMusic();
-        }
-        tryingChange = false;
-    }
+ //   IEnumerator tryChange() {
+ //       tryingChange = true;
+ //       yield return new WaitForSeconds(1);
+ //       if (!source.isPlaying) {
+ //           randomInitialization();
+ //           source.Play();
+ //       }
+ //       tryingChange = false;
+ //   }
    
-	// Update is called once per frame
-	void Update () {
-        if (!tryingChange && !source.isPlaying) {
-            StartCoroutine(tryChange());
-        }
-	}
+	//// Update is called once per frame
+	//void Update () {
+ //       if (!tryingChange && !source.isPlaying) {
+ //           StartCoroutine(tryChange());
+ //       }
+	//}
 }

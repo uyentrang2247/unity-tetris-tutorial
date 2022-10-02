@@ -18,7 +18,7 @@ public class Board : MonoBehaviour
         }
     }
 
-    private void Awake()
+    protected virtual void Awake()
     {
         tilemap = GetComponentInChildren<Tilemap>();
         activePiece = GetComponentInChildren<Piece>();
@@ -28,12 +28,12 @@ public class Board : MonoBehaviour
         }
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         SpawnPiece();
     }
 
-    public void SpawnPiece()
+    public virtual void SpawnPiece()
     {
         int random = Random.Range(0, tetrominoes.Length);
         TetrominoData data = tetrominoes[random];

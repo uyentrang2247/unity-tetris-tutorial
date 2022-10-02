@@ -4,7 +4,7 @@ using UnityEngine.Tilemaps;
 public class Ghost : MonoBehaviour
 {
     public Tile tile;
-    public Board mainBoard;
+    public NewBoard mainBoard;
     public Piece trackingPiece;
 
     public Tilemap tilemap { get; private set; }

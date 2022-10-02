@@ -36,6 +36,11 @@ public class Piece : MonoBehaviour
         }
     }
 
+    public void ChangePosition(Vector3Int position)
+    {
+        this.position = position;   
+    }
+
     private void Update()
     {
         board.Clear(this);

@@ -45,9 +45,7 @@ public class Piece : MonoBehaviour
         lockTime += Time.deltaTime;
 
         // Handle rotation
-        if (Input.GetKeyDown(KeyCode.Q)) {
-            Rotate(-1);
-        } else if (Input.GetKeyDown(KeyCode.E)) {
+        if (Input.GetKeyDown(KeyCode.UpArrow)) {
             Rotate(1);
         }
 
@@ -73,7 +71,7 @@ public class Piece : MonoBehaviour
     private void HandleMoveInputs()
     {
         // Soft drop movement
-        if (Input.GetKey(KeyCode.S))
+        if (Input.GetKey(KeyCode.DownArrow))
         {
             if (Move(Vector2Int.down)) {
                 // Update the step time to prevent double movement
@@ -82,9 +80,9 @@ public class Piece : MonoBehaviour
         }
 
         // Left/right movement
-        if (Input.GetKey(KeyCode.A)) {
+        if (Input.GetKey(KeyCode.LeftArrow)) {
             Move(Vector2Int.left);
-        } else if (Input.GetKey(KeyCode.D)) {
+        } else if (Input.GetKey(KeyCode.RightArrow)) {
             Move(Vector2Int.right);
         }
     }

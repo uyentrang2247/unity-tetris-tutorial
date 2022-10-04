@@ -35,9 +35,6 @@ public class Board : MonoBehaviour
     private void Start()
     {
         SpawnPiece();
-        music.stopMusic();
-
-
     }
 
     public void SpawnPiece()
@@ -116,10 +113,7 @@ public class Board : MonoBehaviour
             // because the tiles above will fall down when a row is cleared
             if (IsLineFull(row)) {
                 LineClear(row);
-                music.pauseMusic();
                 music.playScorePointMusic();
-                music.unpauseMusic();
-
             } else {
                 row++;
             }

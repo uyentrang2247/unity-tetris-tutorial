@@ -23,12 +23,12 @@ public class MainMenu : MonoBehaviour {
             highscoreText.text = Highscore.Get();
             highScorePanel.SetActive(true);
         }
-        music.playOpenMusic();
+        music = FindObjectOfType<Music>();
     }
 
     private void Start()
     {
-        music = FindObjectOfType<Music>(); 
+        music.playOpenMusic();
     }
 
     public void NewGame() {

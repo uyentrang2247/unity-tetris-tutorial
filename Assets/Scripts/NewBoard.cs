@@ -54,7 +54,7 @@ public class NewBoard : Board
 
         // Pick a random tetromino to use
         int random = Random.Range(0, tetrominoes.Length);
-        TetrominoData data = tetrominoes[1];
+        TetrominoData data = tetrominoes[random];
 
         // Initialize the next piece with the random data
         // Draw it at the "preview" position on the board

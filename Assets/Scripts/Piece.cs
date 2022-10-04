@@ -49,40 +49,48 @@ public class Piece : MonoBehaviour
 
     private void Update()
     {
-        board.Clear(this);
-
-        // We use a timer to allow the player to make adjustments to the piece
-        // before it locks in place
-        lockTime += Time.deltaTime;
-
-        // Handle rotation
-        if (Input.GetKeyDown(KeyCode.UpArrow)) {
-            Rotate(1);
-        }
-
-        // Handle rotation
-        if (Input.GetKeyDown(KeyCode.Z))
+        if (!Board.IsStop)
         {
-            Rotate(-1);
-        }
+            board.Clear(this);
 
-        // Handle hard drop
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            HardDrop();
-        }
+            // We use a timer to allow the player to make adjustments to the piece
+            // before it locks in place
+            lockTime += Time.deltaTime;
 
-        // Allow the player to hold movement keys but only after a move delay
-        // so it does not move too fast
-        if (Time.time > moveTime) {
-            HandleMoveInputs();
-        }
+            // Handle rotation
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                Rotate(1);
+            }
 
-        // Advance the piece to the next row every x seconds
-        if (Time.time > stepTime) {
-            Step();
-        }
+            // Handle rotation
+            if (Input.GetKeyDown(KeyCode.Z))
+            {
+                Rotate(-1);
+            }
 
-        board.Set(this);
+            // Handle hard drop
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                HardDrop();
+            }
+
+            // Allow the player to hold movement keys but only after a move delay
+            // so it does not move too fast
+            if (Time.time > moveTime)
+            {
+                HandleMoveInputs();
+            }
+
+            // Advance the piece to the next row every x seconds
+            if (Time.time > stepTime)
+            {
+                Step();
+            }
+
+            board.Set(this);
+        }
+        
     }
 
     private void HandleMoveInputs()

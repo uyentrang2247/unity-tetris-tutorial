@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class NewBoard : Board
 {
@@ -14,6 +15,9 @@ public class NewBoard : Board
     private int previewMargin = 4;
 
     private bool Swaped { get; set; } = false;
+
+    public GameObject pausePanel;
+    public GameObject gameOverPanel;
 
     protected override void Awake()
     {
@@ -54,7 +58,7 @@ public class NewBoard : Board
 
         // Pick a random tetromino to use
         int random = Random.Range(0, tetrominoes.Length);
-        TetrominoData data = tetrominoes[1];
+        TetrominoData data = tetrominoes[random];
 
         // Initialize the next piece with the random data
         // Draw it at the "preview" position on the board
@@ -108,7 +112,7 @@ public class NewBoard : Board
         }
         else
         {
-            GameOver();
+            GameOver(gameOverPanel);
         }
 
         // Set the next random piece
@@ -149,9 +153,32 @@ public class NewBoard : Board
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+        if (IsStop && Input.GetKeyDown(KeyCode.R))
         {
-            SwapPiece();
+            IsStop = false;
+            Time.timeScale = 1;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
+        else if (IsStop && Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!gameOverPanel.activeSelf )
+            {
+                IsStop = false;
+                Time.timeScale = 1;
+                pausePanel.SetActive(false);
+            }
+        }else{
+            if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
+            {
+                SwapPiece();
+            }
+            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+            {
+                IsStop = true;
+                Time.timeScale = 1;
+                pausePanel.SetActive(!pausePanel.activeSelf);
+            }
+        }
+
     }
 }

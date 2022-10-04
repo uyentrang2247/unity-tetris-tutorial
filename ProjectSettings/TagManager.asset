@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Next Box
   - Hold Box
+  - Preview Group Container
   layers:
   - Default
   - TransparentFX

@@ -10,6 +10,8 @@ public class Board : MonoBehaviour
     public Vector2Int boardSize = new Vector2Int(10, 20);
     public Vector3Int spawnPosition = new Vector3Int(-1, 8, 0);
 
+    private int totalLineCleard = 0;
+
     public RectInt Bounds {
         get
         {
@@ -99,6 +101,7 @@ public class Board : MonoBehaviour
     {
         RectInt bounds = Bounds;
         int row = bounds.yMin;
+        int lineClear = 0;
 
         // Clear from bottom to top
         while (row < bounds.yMax)
@@ -107,13 +110,41 @@ public class Board : MonoBehaviour
             // because the tiles above will fall down when a row is cleared
             if (IsLineFull(row)) {
                 LineClear(row);
+                lineClear++;
             } else {
                 row++;
             }
         }
+
+        Score(lineClear);
     }
 
-    public bool IsLineFull(int row)
+    public void Score(int lineClear)
+    {
+        if (lineClear == 0) return;
+
+        switch (lineClear)
+        {
+            case 1:
+                ScoreManager.score += 100;
+                break;
+            case 2:
+                ScoreManager.score += 300;
+                break;
+            case 3:
+                ScoreManager.score += 500;
+                break;
+            case 4:
+                ScoreManager.score += 800;
+                break;
+        }
+
+        totalLineCleard += lineClear;
+
+        if (LevelManager.level != 15 && totalLineCleard > LevelManager.level * 10) LevelManager.level++;
+    }
+
+        public bool IsLineFull(int row)
     {
         RectInt bounds = Bounds;
 

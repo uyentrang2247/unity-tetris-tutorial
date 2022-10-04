@@ -49,20 +49,18 @@ public class NewBoard : Board
 
     private void SetNextPiece()
     {
-        Debug.Log("Next");
         Piece nextPiece = gameObject.AddComponent<Piece>();
         nextPiece.enabled = false;
 
         // Pick a random tetromino to use
         int random = Random.Range(0, tetrominoes.Length);
-        TetrominoData data = tetrominoes[random];
+        TetrominoData data = tetrominoes[1];
 
         // Initialize the next piece with the random data
         // Draw it at the "preview" position on the board
         nextPiece.Initialize(this, previewPosition, data);
         Set(nextPiece);
         nextPieces.Add(nextPiece);
-        Debug.Log(nextPieces.Count);
         AlignNextPiece();
     }
 
@@ -98,7 +96,10 @@ public class NewBoard : Board
 
 
         // Initialize the active piece with the next piece data
-        activePiece.Initialize(this, spawnPosition, nextPieceData);
+        if(nextPiece.data.tetromino.Equals(Tetromino.I))
+            activePiece.Initialize(this, spawnPosition + Vector3Int.down, nextPieceData);
+        else
+            activePiece.Initialize(this, spawnPosition, nextPieceData);
 
         // Only spawn the piece if valid position otherwise game over
         if (IsValidPosition(activePiece, spawnPosition))

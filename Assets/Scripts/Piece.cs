@@ -8,13 +8,19 @@ public class Piece : MonoBehaviour
     public Vector3Int position { get; private set; }
     public int rotationIndex { get; private set; }
 
-    public float stepDelay = 1f;
-    public float moveDelay = 0.1f;
+    public float stepDelay;
+    public float moveDelay = 0.05f;
     public float lockDelay = 0.5f;
 
     private float stepTime;
     private float moveTime;
     private float lockTime;
+
+    public void Start()
+    {
+        int level = LevelManager.level;
+        stepDelay = Mathf.Pow((0.8f - ((level - 1) * 0.007f)), (level - 1));
+    }
 
     public void Initialize(Board board, Vector3Int position, TetrominoData data)
     {
@@ -22,7 +28,7 @@ public class Piece : MonoBehaviour
         this.board = board;
         this.position = position;
 
-        rotationIndex = 0;
+        rotationIndex = 1;
         stepTime = Time.time + stepDelay;
         moveTime = Time.time + moveDelay;
         lockTime = 0f;
@@ -52,6 +58,12 @@ public class Piece : MonoBehaviour
         // Handle rotation
         if (Input.GetKeyDown(KeyCode.UpArrow)) {
             Rotate(1);
+        }
+
+        // Handle rotation
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            Rotate(-1);
         }
 
         // Handle hard drop
@@ -199,6 +211,7 @@ public class Piece : MonoBehaviour
             Vector2Int translation = data.wallKicks[wallKickIndex, i];
 
             if (Move(translation)) {
+                Debug.Log("Kick " + translation);
                 return true;
             }
         }

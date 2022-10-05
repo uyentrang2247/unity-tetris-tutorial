@@ -153,30 +153,26 @@ public class NewBoard : Board
     }
     private void Update()
     {
-        if (IsStop && Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
         {
-            IsStop = false;
+            Debug.Log("Toggle pause");
+            IsStop = !IsStop;
             Time.timeScale = 1;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            pausePanel.SetActive(!pausePanel.activeSelf);
         }
-        else if (IsStop && Input.GetKeyDown(KeyCode.Escape))
+
+        if (IsStop)
         {
-            if (!gameOverPanel.activeSelf )
+            if (Input.GetKeyDown(KeyCode.R))
             {
                 IsStop = false;
                 Time.timeScale = 1;
-                pausePanel.SetActive(false);
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name);
             }
         }else{
             if (Input.GetKeyDown(KeyCode.LeftShift) || Input.GetKeyDown(KeyCode.RightShift))
             {
                 SwapPiece();
-            }
-            if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
-            {
-                IsStop = true;
-                Time.timeScale = 1;
-                pausePanel.SetActive(!pausePanel.activeSelf);
             }
         }
 

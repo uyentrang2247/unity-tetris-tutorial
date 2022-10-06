@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class LevelManager : MonoBehaviour
 {
-    public static int level;
+    public int Level { get; private set; }
+    private int MaxLevel = 15;
 
     Text levelText;
 
@@ -17,16 +18,22 @@ public class LevelManager : MonoBehaviour
 
     void Start()
     {
-        level = 1;
+        Level = 1;
+    }
+
+    public void TryLevelUp(int totalLineClear)
+    {
+        if (Level == MaxLevel) return;
+
+        if (totalLineClear > Level * 10)
+        {
+            Level++;
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (ScoreManager.score >= level * 1000)
-        {
-            level += 1;
-        }
-        levelText.text = level.ToString();
+        levelText.text = Level.ToString();
     }
 }

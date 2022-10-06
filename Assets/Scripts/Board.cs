@@ -13,7 +13,10 @@ public class Board : MonoBehaviour
     public Music music;
     public MainMenu mainMenu;
 
-    private int totalLineCleard = 0;
+    public LevelManager levelManager;
+    public ScoreManager scoreManager;
+
+    protected int totalLineCleard = 0;
 
     //field for stop or over mode
     public bool IsStop { get; set; } = false;
@@ -124,7 +127,7 @@ public class Board : MonoBehaviour
 
     }
 
-    public void ClearLines()
+    public int ClearLines()
     {
         RectInt bounds = Bounds;
         int row = bounds.yMin;
@@ -147,50 +150,57 @@ public class Board : MonoBehaviour
             }
         }
 
-        Score(lineClear);
+        return lineClear;
     }
 
-    public void Score(int lineClear)
+    //public void Score(int lineClear)
+    //{
+    //    if (lineClear == 0) return;
+
+    //    switch (lineClear)
+    //    {
+    //        case 1:
+    //            ScoreManager.score += 40 * (LevelManager.level);
+    //            break;
+    //        case 2:
+    //            ScoreManager.score += 100 * (LevelManager.level);
+    //            break;
+    //        case 3:
+    //            ScoreManager.score += 300 * (LevelManager.level);
+    //            break;
+    //        case 4:
+    //            ScoreManager.score += 1200 * (LevelManager.level);
+    //            break;
+    //    }
+
+    //    totalLineCleard += lineClear;
+
+    //    Debug.Log(totalLineCleard);
+    //    Debug.Log(totalLineCleard > LevelManager.level * 10);
+
+    //    if (LevelManager.level != 15 && totalLineCleard > LevelManager.level * 10)
+    //    {
+    //        Debug.Log("Level up");
+    //        LevelManager.level++;
+    //    }
+    //}
+
+    public bool IsLineFull(int row)
     {
-        if (lineClear == 0) return;
+    RectInt bounds = Bounds;
 
-        switch (lineClear)
-        {
-            case 1:
-                ScoreManager.score += 40 * (LevelManager.level);
-                break;
-            case 2:
-                ScoreManager.score += 100 * (LevelManager.level);
-                break;
-            case 3:
-                ScoreManager.score += 300 * (LevelManager.level);
-                break;
-            case 4:
-                ScoreManager.score += 1200 * (LevelManager.level);
-                break;
+    for (int col = bounds.xMin; col < bounds.xMax; col++)
+    {
+        Vector3Int position = new Vector3Int(col, row, 0);
+
+        // The line is not full if a tile is missing
+        if (!tilemap.HasTile(position)) {
+            return false;
         }
-
-        totalLineCleard += lineClear;
-
-        if (LevelManager.level != 15 && totalLineCleard > LevelManager.level * 10) LevelManager.level++;
     }
 
-        public bool IsLineFull(int row)
-        {
-        RectInt bounds = Bounds;
-
-        for (int col = bounds.xMin; col < bounds.xMax; col++)
-        {
-            Vector3Int position = new Vector3Int(col, row, 0);
-
-            // The line is not full if a tile is missing
-            if (!tilemap.HasTile(position)) {
-                return false;
-            }
-        }
-
-        return true;
-        }
+    return true;
+    }
 
     public void LineClear(int row)
     {
@@ -219,4 +229,9 @@ public class Board : MonoBehaviour
         }
     }
 
+    public void TryLevelUp(int newLineClear)
+    {
+        totalLineCleard += newLineClear;
+        levelManager.TryLevelUp(totalLineCleard);
+    }
 }

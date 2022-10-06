@@ -51,4 +51,20 @@ public static class Data
         { Tetromino.Z, WallKicksJLOSTZ },
     };
 
+    public static readonly Dictionary<ScoreAction, int> BaseActionScore = new Dictionary<ScoreAction, int>
+    {
+        {ScoreAction.Single, 100},
+        {ScoreAction.Double, 300},
+        {ScoreAction.Triple, 500},
+        {ScoreAction.Tetris, 800},
+        {ScoreAction.TSpinMiniNoLines, 100},
+        {ScoreAction.TSpinNoLines, 400},
+        {ScoreAction.TSpinMiniSingle, 200},
+        {ScoreAction.TSpinSingle, 800},
+        {ScoreAction.TspinMiniDouble, 400},
+        {ScoreAction.TspinDouble, 1200},
+        {ScoreAction.TSpinTriple, 1600},
+        {ScoreAction.SoftDrop, 1},
+        {ScoreAction.HardDrop, 2},
+    };
 }

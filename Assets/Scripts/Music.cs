@@ -22,7 +22,7 @@ public class Music : MonoBehaviour {
     // get the first music by random number
     void randomInitialization() {
         nextMusic = Random.Range(0, BGM.Length);
-        bgmAudioSource.clip = BGM[4] as AudioClip;
+        bgmAudioSource.clip = BGM[nextMusic] as AudioClip;
     }
 
     // select next music and increment nextMusic by circular reference

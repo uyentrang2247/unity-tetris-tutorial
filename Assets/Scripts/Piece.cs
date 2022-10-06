@@ -16,10 +16,15 @@ public class Piece : MonoBehaviour
     private float moveTime;
     private float lockTime;
 
+    private bool locking;
+
+    private int level;
+    private bool possibleTspin;
+    private bool wallKicked;
+
     public void Start()
     {
-        int level = LevelManager.level;
-        stepDelay = Mathf.Pow((0.8f - ((level - 1) * 0.007f)), (level - 1));
+        
     }
 
     public void Initialize(Board board, Vector3Int position, TetrominoData data)
@@ -29,8 +34,13 @@ public class Piece : MonoBehaviour
         this.position = position;
 
         rotationIndex = 0;
+
+        level = board.levelManager.Level;
+        stepDelay = Mathf.Pow((0.8f - ((level - 1) * 0.007f)), (level - 1));
+
         stepTime = Time.time + stepDelay;
         moveTime = Time.time + moveDelay;
+        locking = false;
         lockTime = 0f;
 
         if (cells == null) {
@@ -49,7 +59,6 @@ public class Piece : MonoBehaviour
 
     private void Update()
     {
-        int level = LevelManager.level;
         stepDelay = Mathf.Pow((0.8f - ((level - 1) * 0.007f)), (level - 1));
 
         if (!board.IsStop && board.IsPlay)
@@ -70,6 +79,12 @@ public class Piece : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Z))
             {
                 Rotate(-1);
+            }
+
+            // Handle sonic drop
+            if (Input.GetKeyDown(KeyCode.X))
+            {
+                SonicDrop();
             }
 
             // Handle hard drop
@@ -101,6 +116,7 @@ public class Piece : MonoBehaviour
         if (Input.GetKey(KeyCode.DownArrow))
         {
             if (Move(Vector2Int.down)) {
+                board.scoreManager.score += Data.BaseActionScore[ScoreAction.SoftDrop];
                 // Update the step time to prevent double movement
                 stepTime = Time.time + stepDelay;
             }
@@ -119,7 +135,13 @@ public class Piece : MonoBehaviour
         stepTime = Time.time + stepDelay;
 
         // Step down to the next row
-        Move(Vector2Int.down);
+        if (Move(Vector2Int.down))
+        {
+            locking = false;
+        } else
+        {
+            locking = true;
+        }
 
         // Once the piece has been inactive for too long it becomes locked
         if (lockTime >= lockDelay) {
@@ -127,22 +149,101 @@ public class Piece : MonoBehaviour
         }
     }
 
-    private void HardDrop()
+    private void SonicDrop()
     {
         while (Move(Vector2Int.down)) {
+            board.scoreManager.score += Data.BaseActionScore[ScoreAction.HardDrop];
             continue;
         }
+    }
 
+    private void HardDrop()
+    {
+        SonicDrop();
         Lock();
     }
 
     private void Lock()
     {
         board.Set(this);
-        board.ClearLines();
+
+        possibleTspin = CheckPossibleTspin();
+
+        int lineClear = board.ClearLines();
+
+        if (lineClear > 0) { 
+            board.TryLevelUp(lineClear);
+        }
+
+        Score(lineClear);
+
         board.SpawnPiece();
     }
 
+    public void Score(int lineClear)
+    {
+        int score = 0;
+
+        if (lineClear == 0) return;
+
+        Debug.Log($"tetromino: {data.tetromino.Equals(Tetromino.T)} posible tspin: {possibleTspin} walkick: {wallKicked}");
+        if (data.tetromino.Equals(Tetromino.T) && possibleTspin)
+        {
+            switch (lineClear)
+            {
+                case 0:
+                    if(wallKicked) score = Data.BaseActionScore[ScoreAction.TSpinMiniNoLines] * level;
+                    else score = Data.BaseActionScore[ScoreAction.TSpinNoLines] * level;
+                    break;
+                case 1:
+                    if (wallKicked) score = Data.BaseActionScore[ScoreAction.TSpinMiniSingle] * level;
+                    else score = Data.BaseActionScore[ScoreAction.TSpinSingle] * level;
+                    break;
+                case 2:
+                    if (wallKicked) score = Data.BaseActionScore[ScoreAction.TspinMiniDouble] * level;
+                    else score = Data.BaseActionScore[ScoreAction.TspinDouble] * level;
+                    break;
+                case 3:
+                    score = Data.BaseActionScore[ScoreAction.TSpinTriple] * level;
+                    break;
+            }
+        }
+        else
+        {
+            switch (lineClear)
+            {
+                case 1:
+                    score = Data.BaseActionScore[ScoreAction.Single] * level;
+                    break;
+                case 2:
+                    score = Data.BaseActionScore[ScoreAction.Double] * level;
+                    break;
+                case 3:
+                    score = Data.BaseActionScore[ScoreAction.Triple] * level;
+                    break;
+                case 4:
+                    score = Data.BaseActionScore[ScoreAction.Tetris] * level;
+                    break;
+            }
+        }
+
+        board.scoreManager.score += score;
+    }
+
+    public bool CheckPossibleTspin()
+    {
+        if (!data.tetromino.Equals(Tetromino.T)) return false;
+        Debug.Log($"down: {CheckMoveValid(Vector2Int.down)} up: {CheckMoveValid(Vector2Int.up)} left: {CheckMoveValid(Vector2Int.left)} right: {CheckMoveValid(Vector2Int.right)}");
+        if (CheckMoveValid(Vector2Int.down) 
+            || CheckMoveValid(Vector2Int.up) 
+            || CheckMoveValid(Vector2Int.left) 
+            || CheckMoveValid(Vector2Int.right))
+        {
+            return false;
+        }
+
+        return true;
+    }
     private bool Move(Vector2Int translation)
     {
         Vector3Int newPosition = position;
@@ -156,10 +257,20 @@ public class Piece : MonoBehaviour
         {
             position = newPosition;
             moveTime = Time.time + moveDelay;
-            lockTime = 0f; // reset
+            if(!locking) lockTime = 0f; // reset
         }
 
         return valid;
+    }
+
+    private bool CheckMoveValid(Vector2Int translation)
+    {
+        Debug.Log(string.Join(",", cells));
+        Vector3Int newPosition = position;
+        newPosition.x += translation.x;
+        newPosition.y += translation.y;
+
+        return board.IsValidPosition(this, newPosition);
     }
 
     private void Rotate(int direction)
@@ -221,13 +332,16 @@ public class Piece : MonoBehaviour
             Vector2Int translation = data.wallKicks[wallKickIndex, i];
 
             if (Move(translation)) {
-                Debug.Log("Kick " + translation);
+                //the first wallkick0 translation is no kick (0,0)
+                if (i != 0) wallKicked = true;
+                else wallKicked = false;
                 return true;
             }
         }
 
         return false;
     }
+
 
     private int GetWallKickIndex(int rotationIndex, int rotationDirection)
     {

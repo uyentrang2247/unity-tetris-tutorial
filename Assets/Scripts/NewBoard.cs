@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class NewBoard : Board
@@ -78,7 +79,7 @@ public class NewBoard : Board
 
     private TetrominoData GetTetrominoData(Tetromino tetromino)
     {
-        return tetrominoes.SingleOrDefault(data => data.tetromino.Equals(Tetromino.I));
+        return tetrominoes.SingleOrDefault(data => data.tetromino.Equals(tetromino));
     }
 
     private void AlignNextPiece()
@@ -113,8 +114,15 @@ public class NewBoard : Board
 
 
         // Initialize the active piece with the next piece data
-        if(nextPiece.data.tetromino.Equals(Tetromino.I))
-            activePiece.Initialize(this, spawnPosition + Vector3Int.down, nextPieceData);
+        if (nextPiece.data.tetromino.Equals(Tetromino.I))
+        {
+            Vector3Int defaultISpawnPosition = spawnPosition + Vector3Int.down;
+            if(IsValidPosition(nextPiece, defaultISpawnPosition)){
+                activePiece.Initialize(this, defaultISpawnPosition, nextPieceData);
+            } 
+            else activePiece.Initialize(this, spawnPosition, nextPieceData);
+
+        }
         else
             activePiece.Initialize(this, spawnPosition, nextPieceData);
 
@@ -172,7 +180,7 @@ public class NewBoard : Board
         {
             Debug.Log("Stop");
             tilemap.ClearAllTiles();
-            music.playGameOverMusic();
+            music?.playGameOverMusic();
             IsStop = true;
             IsPlay = false;
             Time.timeScale = Time.timeScale > 0 ? 0f : 1f;

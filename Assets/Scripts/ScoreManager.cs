@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ScoreManager : MonoBehaviour
 {
 
-    public static int score;
+    public int score;
 
     Text scoreText;
 
@@ -23,8 +23,7 @@ public class ScoreManager : MonoBehaviour
 
     // Update is called once per frame
     void Update()
-    {
-        
+    {        
         scoreText.text = System.String.Format("{0:D8}", score);
     }
 }

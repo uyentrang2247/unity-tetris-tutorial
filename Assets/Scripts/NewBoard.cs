@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -44,6 +45,7 @@ public class NewBoard : Board
 
     protected override void Start()
     {
+        IsPlay = true;
         for (int i = 0; i < previewAmount; i++)
         {
             SetNextPiece();
@@ -53,12 +55,13 @@ public class NewBoard : Board
 
     private void SetNextPiece()
     {
+        Debug.Log("Next");
         Piece nextPiece = gameObject.AddComponent<Piece>();
         nextPiece.enabled = false;
 
         // Pick a random tetromino to use
         int random = Random.Range(0, tetrominoes.Length);
-        TetrominoData data = tetrominoes[random];
+        TetrominoData data = GetTetrominoData(Tetromino.I);
 
         // Initialize the next piece with the random data
         // Draw it at the "preview" position on the board
@@ -66,6 +69,16 @@ public class NewBoard : Board
         Set(nextPiece);
         nextPieces.Add(nextPiece);
         AlignNextPiece();
+    }
+
+    private TetrominoData GetTetrominoData(int index)
+    {
+        return tetrominoes[index];
+    }
+
+    private TetrominoData GetTetrominoData(Tetromino tetromino)
+    {
+        return tetrominoes.SingleOrDefault(data => data.tetromino.Equals(Tetromino.I));
     }
 
     private void AlignNextPiece()
@@ -151,9 +164,31 @@ public class NewBoard : Board
 
         Swaped = true;
     }
+
+    public override void GameOver(GameObject overPanel)
+    {
+        // mainMenu.NewGame();
+        if (overPanel != null)
+        {
+            Debug.Log("Stop");
+            tilemap.ClearAllTiles();
+            music.playGameOverMusic();
+            IsStop = true;
+            IsPlay = false;
+            Time.timeScale = Time.timeScale > 0 ? 0f : 1f;
+            overPanel.SetActive(true);
+        }
+        else
+        {
+
+        }
+
+        // Do anything else you want on game over here..
+    }
+
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
+        if (IsPlay && (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P)))
         {
             Debug.Log("Toggle pause");
             IsStop = !IsStop;

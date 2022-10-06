@@ -28,7 +28,7 @@ public class Piece : MonoBehaviour
         this.board = board;
         this.position = position;
 
-        rotationIndex = 1;
+        rotationIndex = 0;
         stepTime = Time.time + stepDelay;
         moveTime = Time.time + moveDelay;
         lockTime = 0f;
@@ -49,7 +49,10 @@ public class Piece : MonoBehaviour
 
     private void Update()
     {
-        if (!Board.IsStop)
+        int level = LevelManager.level;
+        stepDelay = Mathf.Pow((0.8f - ((level - 1) * 0.007f)), (level - 1));
+
+        if (!board.IsStop && board.IsPlay)
         {
             board.Clear(this);
 
@@ -90,7 +93,6 @@ public class Piece : MonoBehaviour
 
             board.Set(this);
         }
-        
     }
 
     private void HandleMoveInputs()
@@ -171,7 +173,7 @@ public class Piece : MonoBehaviour
         ApplyRotationMatrix(direction);
 
         // Revert the rotation if the wall kick tests fail
-        if (!TestWallKicks(rotationIndex, direction))
+        if (!TestWallKicks(originalRotation, direction))
         {
             rotationIndex = originalRotation;
             ApplyRotationMatrix(-direction);
@@ -235,13 +237,15 @@ public class Piece : MonoBehaviour
             wallKickIndex--;
         }
 
+        Debug.Log($"wallKickIndex {wallKickIndex}");
+
         return Wrap(wallKickIndex, 0, data.wallKicks.GetLength(0));
     }
 
     private int Wrap(int input, int min, int max)
     {
         if (input < min) {
-            return max - (min - input) % (max - min);
+            return (max - (min - input) % (max - min)) % (max - min);
         } else {
             return min + (input - min) % (max - min);
         }

@@ -10,10 +10,14 @@ public class Board : MonoBehaviour
     public Vector2Int boardSize = new Vector2Int(10, 20);
     public Vector3Int spawnPosition = new Vector3Int(-1, 8, 0);
 
+    public Music music;
+    public MainMenu mainMenu;
+
     private int totalLineCleard = 0;
 
     //field for stop or over mode
-    public static bool IsStop { get; set; } = false;
+    public bool IsStop { get; set; } = false;
+    public bool IsPlay { get; set; } = false;
 
     public RectInt Bounds {
         get
@@ -27,6 +31,7 @@ public class Board : MonoBehaviour
     {
         tilemap = GetComponentInChildren<Tilemap>();
         activePiece = GetComponentInChildren<Piece>();
+        music = FindObjectOfType<Music>();
 
         for (int i = 0; i < tetrominoes.Length; i++) {
             tetrominoes[i].Initialize();
@@ -56,17 +61,20 @@ public class Board : MonoBehaviour
 
     }
 
-    public void GameOver(GameObject overPanel)
+    public virtual void GameOver(GameObject overPanel)
     {
-        if (overPanel == null)
-        {
-
-        }
-        else
+        tilemap.ClearAllTiles();
+        music?.playGameOverMusic();
+        // mainMenu.NewGame();
+        if (overPanel != null)
         {
             IsStop = true;
             Time.timeScale = Time.timeScale > 0 ? 0f : 1f;
             overPanel.SetActive(true);
+        }
+        else
+        {
+
         }
         
         // Do anything else you want on game over here..
@@ -130,6 +138,7 @@ public class Board : MonoBehaviour
             if (IsLineFull(row))
             {
                 LineClear(row);
+                music?.playScorePointMusic();
                 lineClear++;
             }
             else
@@ -148,16 +157,16 @@ public class Board : MonoBehaviour
         switch (lineClear)
         {
             case 1:
-                ScoreManager.score += 100;
+                ScoreManager.score += 40 * (LevelManager.level);
                 break;
             case 2:
-                ScoreManager.score += 300;
+                ScoreManager.score += 100 * (LevelManager.level);
                 break;
             case 3:
-                ScoreManager.score += 500;
+                ScoreManager.score += 300 * (LevelManager.level);
                 break;
             case 4:
-                ScoreManager.score += 800;
+                ScoreManager.score += 1200 * (LevelManager.level);
                 break;
         }
 

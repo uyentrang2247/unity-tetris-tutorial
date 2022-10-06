@@ -13,6 +13,8 @@ public class MainMenu : MonoBehaviour {
     private int buttonSelected;
     private int numberOfButtons;
 
+    public Music music;
+
     void Awake() {
         numberOfButtons = buttons.Length;
         buttonSelected = 0;
@@ -21,9 +23,15 @@ public class MainMenu : MonoBehaviour {
             highscoreText.text = Highscore.Get();
             highScorePanel.SetActive(true);
         }
+        music = FindObjectOfType<Music>();
     }
 
-	public void NewGame() {
+    private void Start()
+    {
+        music.playOpenMusic();
+    }
+
+    public void NewGame() {
 		SceneManager.LoadScene(1);
 	}
 

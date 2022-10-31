@@ -18,16 +18,17 @@ public class MainMenu : MonoBehaviour {
     void Awake() {
         numberOfButtons = buttons.Length;
         buttonSelected = 0;
-        SelectNewGame();
-        if (Highscore.highscore > 0) {
-            highscoreText.text = Highscore.Get();
-            highScorePanel.SetActive(true);
-        }
+        SelectButton(0);
         music = FindObjectOfType<Music>();
     }
 
     private void Start()
     {
+        if (Highscore.highscore > 0)
+        {
+            highscoreText.text = Highscore.Get();
+            highScorePanel.SetActive(true);
+        }
         music.playOpenMusic();
     }
 
@@ -36,27 +37,40 @@ public class MainMenu : MonoBehaviour {
 	}
 
     public void Exit() {
-        Application.Quit ();
+        Application.Quit();
+    }
+
+    public void OpenControls()
+    {
+        SceneManager.LoadScene(2);
     }
 
     void openSelected() {
-        if (buttonSelected == 0) {
+        if (buttonSelected == 0)
+        {
             NewGame();
-        } else if (buttonSelected == 1) {
+        }
+        else if (buttonSelected == 1)
+        {
+            OpenControls();
+        }
+        else if (buttonSelected == 2)
+        {
             Exit();
         }
     }
 
-    public void SelectNewGame() {
-        buttons[0].SetActive(true);
-        buttons[1].SetActive(false);
-        buttonSelected = 0;
-    }
+    public void SelectButton(int buttonIndex)
+    {
+        if (buttonIndex > buttons.Length) return;
 
-    public void SelectExitGame() {
-        buttons[1].SetActive(true);
-        buttons[0].SetActive(false);
-        buttonSelected = 1;
+        for (int i = 0; i < buttons.Length; i++)
+        {
+            if (i == buttonIndex) buttons[i].SetActive(true);
+            else buttons[i].SetActive(false);
+        }
+
+        buttonSelected = buttonIndex;
     }
 
     void changePanel(int direction) {
